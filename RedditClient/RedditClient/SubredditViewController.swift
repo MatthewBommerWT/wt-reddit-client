@@ -9,9 +9,10 @@ import UIKit
 
 class SubredditViewController: UITableViewController {
 
-    let baseAPIURL: String =  "https://reddit.com/.json"
+    let baseAPIURL: String =  "https://www.reddit.com/r/aww/.json"
     let mainClient: APIClient = APIClient()
-        
+    var posts: [Post] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -26,7 +27,11 @@ class SubredditViewController: UITableViewController {
         mainClient.performDecodable(request: request) { (result: Result<Kind<Listing>, Error>) in
             switch result {
             case .success(let kind):
-                print(kind)
+                self.posts = kind.data.children.map { return $0.data }
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                print(self.posts)
             case .failure(let error):
                 print(error)
             }
@@ -36,5 +41,6 @@ class SubredditViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         //Show the post that has been selected
     }
-
+    
+    
 }
