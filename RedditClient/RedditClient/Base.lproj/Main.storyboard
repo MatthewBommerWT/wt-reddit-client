@@ -3,28 +3,11 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Item 2-->
-        <scene sceneID="xBQ-85-UoW">
-            <objects>
-                <viewController id="rpR-fR-U0N" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="BuJ-9Q-2HW">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <viewLayoutGuide key="safeArea" id="b8s-8p-tlZ"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                    </view>
-                    <tabBarItem key="tabBarItem" title="Item 2" id="0eD-Cr-tKz"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="m8k-JP-pkC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="777" y="512"/>
-        </scene>
-        <!--Item-->
+        <!--Subreddit View Controller-->
         <scene sceneID="VpY-2Q-Ndr">
             <objects>
                 <tableViewController id="7vY-u4-aX6" customClass="SubredditViewController" customModule="RedditClient" customModuleProvider="target" sceneMemberID="viewController">
@@ -47,29 +30,47 @@
                             <outlet property="delegate" destination="7vY-u4-aX6" id="my6-5D-9pD"/>
                         </connections>
                     </tableView>
-                    <tabBarItem key="tabBarItem" title="Item" id="Jye-wj-k3c"/>
+                    <navigationItem key="navigationItem" id="vd1-CN-UEG"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qKE-B4-CrE" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="777" y="-147"/>
+            <point key="canvasLocation" x="1686.9565217391305" y="-147.32142857142856"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Tab Bar View Controller-->
         <scene sceneID="s55-By-CUR">
             <objects>
-                <tabBarController id="whS-aP-7qn" sceneMemberID="viewController">
+                <tabBarController id="whS-aP-7qn" customClass="TabBarViewController" customModule="RedditClient" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="bel-Pg-MZy">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="rpR-fR-U0N" kind="relationship" relationship="viewControllers" id="ct5-Vs-k8C"/>
-                        <segue destination="7vY-u4-aX6" kind="relationship" relationship="viewControllers" id="PZZ-OJ-Y50"/>
+                        <segue destination="b77-VM-YDZ" kind="relationship" relationship="viewControllers" id="PZZ-OJ-Y50"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4S3-mU-EG2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-112" y="208"/>
+        </scene>
+        <!--Item-->
+        <scene sceneID="Wwr-2d-j7o">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="b77-VM-YDZ" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="Jye-wj-k3c"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="74E-av-mBP">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="7vY-u4-aX6" kind="relationship" relationship="rootViewController" id="nG8-i8-w89"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cnP-Og-xps" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="776.81159420289862" y="-147.32142857142856"/>
         </scene>
     </scenes>
     <resources>

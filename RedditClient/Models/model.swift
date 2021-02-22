@@ -9,6 +9,7 @@ import Foundation
 
 struct Listing: Decodable {
     let children: [Kind<Post>]
+    let after: String
 }
 
 struct Kind<T: Decodable>: Decodable {
