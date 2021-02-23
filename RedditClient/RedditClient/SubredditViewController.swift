@@ -8,12 +8,12 @@
 import UIKit
 import SafariServices
 
-class SubredditViewController: UITableViewController, UITabBarControllerDelegate {
+class SubredditViewController: UITableViewController, UITabBarControllerDelegate, SubredditSortHandler {
 
     let baseAPIURL: String =  "https://www.reddit.com/r/aww/"
     let mainClient: APIClient = APIClient()
     var posts: [Post] = []
-    var sortEndpoint: String?
+    var sortEndpoint: SortCategory?
     var afterId: String?
     
     override func viewDidLoad() {
@@ -21,8 +21,11 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
         setupTableView()
         self.title = "r/Aww"
         self.tabBarController?.delegate = self
-        let sortLabel = SubredditSorterLabel(parentViewController: self)
-        self.navigationItem.titleView = sortLabel
+        
+        let sortButton = SubredditSorterBarButton()
+        sortButton.inject(handler: self)
+        
+        self.navigationItem.rightBarButtonItem = sortButton
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -89,7 +92,7 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
     
     private func fetchUrl() -> URL? {
         let queryItems = [URLQueryItem(name: "after", value: afterId), URLQueryItem(name: "count", value: String(posts.count))]
-        let urlString = endpointConcat()
+        let urlString = buildUrlString()
         guard var url = URLComponents(string: urlString) else {
             fatalError("Base api url \(urlString) is not correct")
         }
@@ -97,22 +100,38 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
         return url.url
     }
     
-    private func endpointConcat() -> String {
+    private func buildUrlString() -> String {
         guard let endpoint = sortEndpoint else {
             return "\(baseAPIURL).json"
         }
-        return "\(baseAPIURL + endpoint).json"
+        return "\(baseAPIURL + endpoint.rawValue).json"
     }
     
     public func scrollToTop() {
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
     
-    public func refreshPostDataByEndpoint(endpoint: String) {
+    private func refreshPostDataByEndpoint(endpoint: SortCategory) {
         sortEndpoint = endpoint
         posts = []
         afterId = nil
         
         requestListingData()
+    }
+    
+    //MARK: -SubredditSortHandler
+    func showSortOptions() {
+        let alertController = UIAlertController(title: "Sort By..." , message: nil, preferredStyle: .actionSheet)
+        for action in SortCategory.allCases {
+            alertController.addAction(UIAlertAction(title: action.rawValue, style: .default) { (alertAction) in
+                guard let actionTitle = alertAction.title, let sortCategory = SortCategory(rawValue: actionTitle) else {
+                    return
+                }
+                self.refreshPostDataByEndpoint(endpoint: sortCategory)
+            })
+        }
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
     }
 }
