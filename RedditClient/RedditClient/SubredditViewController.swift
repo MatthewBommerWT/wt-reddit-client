@@ -8,9 +8,9 @@
 import UIKit
 import SafariServices
 
-class SubredditViewController: UITableViewController, UITabBarControllerDelegate, SubredditSortHandler {
+class SubredditViewController: UITableViewController, UITabBarControllerDelegate, RequestBuilder {
 
-    let baseAPIURL: String =  "https://www.reddit.com/r/aww/"
+    @IBInspectable var subredditName: String = ""
     let mainClient: APIClient = APIClient()
     var posts: [Post] = []
     var sortEndpoint: SortCategory?
@@ -19,17 +19,17 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
-        self.title = "r/Aww"
+        self.title = "r/\(subredditName)"
         self.tabBarController?.delegate = self
         
-        let sortButton = SubredditSorterBarButton()
-        sortButton.inject(handler: self)
-        
+        let sortImage = UIImage(systemName: "arrow.up.arrow.down.circle")
+        let sortButton = UIBarButtonItem(image: sortImage, style: .plain, target: self, action: #selector(showSortOptions))
+
         self.navigationItem.rightBarButtonItem = sortButton
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        requestListingData()
+        requestListingData(discardPostData: false)
     }
     
     //MARK: -UITableViewDataSource
@@ -61,7 +61,7 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
     
     override func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.item == posts.count - 1 {
-            requestListingData()
+            requestListingData(discardPostData: false)
         }
     }
     
@@ -70,15 +70,20 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
         tableView.register(nib, forCellReuseIdentifier: "PostTableViewCell")
     }
     
-    private func requestListingData() {
-        guard let url = fetchUrl() else {
+    private func requestListingData(discardPostData: Bool) {
+        guard let url = fetchUrl(endpoint: .subreddit(sub: self.subredditName), apiParamters: .subreddit(afterId: self.afterId, count: self.posts.count), sortEndpoint: self.sortEndpoint) else {
             fatalError("An error occurred while trying to create the API URL.")
         }
         let request = URLRequest(url: url)
         mainClient.performDecodable(request: request) { (result: Result<Kind<Listing>, Error>) in
             switch result {
             case .success(let kind):
-                self.posts.append(contentsOf: kind.data.children.map { return $0.data })
+                let kindMapping = kind.data.children.map { return $0.data }
+                if discardPostData {
+                    self.posts = kindMapping
+                }else {
+                    self.posts.append(contentsOf: kindMapping)
+                }
                 self.afterId = kind.data.after
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -90,36 +95,17 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
         }
     }
     
-    private func fetchUrl() -> URL? {
-        let queryItems = [URLQueryItem(name: "after", value: afterId), URLQueryItem(name: "count", value: String(posts.count))]
-        let urlString = buildUrlString()
-        guard var url = URLComponents(string: urlString) else {
-            fatalError("Base api url \(urlString) is not correct")
-        }
-        url.queryItems = queryItems
-        return url.url
-    }
-    
-    private func buildUrlString() -> String {
-        guard let endpoint = sortEndpoint else {
-            return "\(baseAPIURL).json"
-        }
-        return "\(baseAPIURL + endpoint.rawValue).json"
-    }
-    
     public func scrollToTop() {
         tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
     }
     
     private func refreshPostDataByEndpoint(endpoint: SortCategory) {
         sortEndpoint = endpoint
-        posts = []
         afterId = nil
-        
-        requestListingData()
+        requestListingData(discardPostData: true)
     }
     
-    //MARK: -SubredditSortHandler
+    @objc
     func showSortOptions() {
         let alertController = UIAlertController(title: "Sort By..." , message: nil, preferredStyle: .actionSheet)
         for action in SortCategory.allCases {

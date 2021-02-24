@@ -25,3 +25,7 @@ struct Post: Decodable {
     let subreddit: String
     let id: String
 }
+
+struct SubredditNames: Decodable {
+    let names: [String]
+}
