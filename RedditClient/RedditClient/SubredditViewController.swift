@@ -20,7 +20,6 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
         super.viewDidLoad()
         setupTableView()
         self.title = "r/\(subredditName)"
-        self.tabBarController?.delegate = self
         
         let sortImage = UIImage(systemName: "arrow.up.arrow.down.circle")
         let sortButton = UIBarButtonItem(image: sortImage, style: .plain, target: self, action: #selector(showSortOptions))
@@ -30,6 +29,7 @@ class SubredditViewController: UITableViewController, UITabBarControllerDelegate
     
     override func viewDidAppear(_ animated: Bool) {
         requestListingData(discardPostData: false)
+        self.tabBarController?.delegate = self
     }
     
     //MARK: -UITableViewDataSource

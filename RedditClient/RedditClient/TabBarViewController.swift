@@ -14,7 +14,9 @@ class TabBarViewController: UITabBarController {
     }
     
     override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
-        let delegate = self.delegate as! SubredditViewController
+        guard let delegate = self.delegate as? SubredditViewController else {
+            return
+        }
         delegate.scrollToTop()
     }
 }

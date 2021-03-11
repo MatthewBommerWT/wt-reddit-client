@@ -16,15 +16,11 @@ class PostTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-//        postLabel.lineBreakMode = .byWordWrapping
-//        postLabel.numberOfLines = 0
     }
 
     func configure(for post: Post) {
-        print(post)
         postLabel.text = post.title
         postAuthor.text = "By: \(post.author)"
-        //Use a placeholder if no image exists or was gotten
         guard let url = URL(string: post.thumbnail) else {
             return
         }
